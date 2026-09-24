@@ -1,0 +1,76 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Groovy Units — Converter</title>
+<meta name="description" content="Convert length, weight, temperature, volume, data, energy and more. Instant, free, with a groovy 70s look.">
+<meta property="og:title" content="Groovy Units">
+<meta property="og:description" content="Convert length, weight, temperature, volume, data, energy and more. Instant, free, with a groovy 70s look.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://drew-traldi.github.io/groovy-units-convert/">
+<meta name="twitter:card" content="summary">
+<meta name="author" content="Drew Traldi">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Ctext%20y%3D%27.9em%27%20font-size%3D%2790%27%3E%F0%9F%93%8F%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Shrikhand&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#f6e7c8;--brown:#4a2c17;--orange:#e86a1d;--mustard:#e0a526;--olive:#7b8a3a;--rust:#b33d1b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cream);color:var(--brown);font-family:'DM Sans',system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+.sun{position:fixed;left:50%;top:-40vmin;transform:translateX(-50%);width:120vmin;height:120vmin;border-radius:50%;background:repeating-radial-gradient(circle,var(--rust) 0 5vmin,var(--orange) 5vmin 10vmin,var(--mustard) 10vmin 15vmin,var(--cream) 15vmin 20vmin);opacity:.9;z-index:0}
+.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:24vmin 20px 40px}
+h1{font-family:'Shrikhand',cursive;font-size:clamp(46px,10vw,92px);text-align:center;color:var(--cream);text-shadow:4px 4px 0 var(--brown),8px 8px 0 var(--rust);line-height:1;margin-bottom:28px;transform:rotate(-3deg)}
+.cats{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:22px}
+.cats button{font:700 14px 'DM Sans';border:3px solid var(--brown);background:var(--cream);color:var(--brown);border-radius:40px;padding:8px 16px;cursor:pointer;transition:.15s}
+.cats button.on{background:var(--brown);color:var(--mustard)}
+.card{background:var(--cream);border:4px solid var(--brown);border-radius:36px;padding:28px;box-shadow:10px 10px 0 var(--orange),20px 20px 0 var(--brown)}
+.io{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center}
+.box{display:flex;flex-direction:column;gap:8px}
+.box input{font:700 clamp(26px,5vw,40px) 'DM Sans';width:100%;border:0;border-bottom:4px solid var(--brown);background:transparent;color:var(--brown);outline:none;padding:4px 0}
+.box select{font:700 15px 'DM Sans';border:3px solid var(--brown);border-radius:14px;padding:8px;background:var(--mustard);color:var(--brown);cursor:pointer}
+.swap{width:56px;height:56px;border-radius:50%;border:4px solid var(--brown);background:var(--orange);color:var(--cream);font-size:24px;cursor:pointer;transition:transform .3s}
+.swap:hover{transform:rotate(180deg)}
+.formula{text-align:center;margin-top:18px;font-weight:700;opacity:.75}
+.all{margin-top:28px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.all div{border:3px solid var(--brown);border-radius:18px;padding:10px 14px;display:flex;justify-content:space-between;gap:8px;cursor:pointer;background:#fbf1dc}
+.all div:nth-child(3n+1){background:#f3d9a4}.all div:nth-child(3n+2){background:#f1c7a3}
+.all b{word-break:break-all}
+.all span{opacity:.7;font-size:13px;white-space:nowrap}
+@media(max-width:560px){.io{grid-template-columns:1fr}.swap{margin:auto;transform:rotate(90deg)}}
+</style></head><body>
+<div class="sun"></div>
+<div class="wrap">
+<h1>Groovy Units</h1>
+<div class="cats" id="cats"></div>
+<div class="card">
+ <div class="io"><div class="box"><input id="a" type="number" value="1" step="any"><select id="fu"></select></div>
+ <button class="swap" id="swap" title="Swap">⇄</button>
+ <div class="box"><input id="b" type="number" step="any"><select id="tu"></select></div></div>
+ <div class="formula" id="formula"></div>
+</div>
+<div class="all" id="all"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const U={
+ Length:{m:['Meter',1],km:['Kilometer',1000],cm:['Centimeter',.01],mm:['Millimeter',.001],mi:['Mile',1609.344],yd:['Yard',.9144],ft:['Foot',.3048],in:['Inch',.0254],nmi:['Nautical mile',1852],ly:['Light year',9.4607e15]},
+ Weight:{kg:['Kilogram',1],g:['Gram',.001],mg:['Milligram',1e-6],t:['Metric ton',1000],lb:['Pound',.45359237],oz:['Ounce',.028349523],st:['Stone',6.35029318]},
+ Temp:{c:['Celsius'],f:['Fahrenheit'],k:['Kelvin']},
+ Volume:{l:['Liter',1],ml:['Milliliter',.001],gal:['US gallon',3.785411784],qt:['US quart',.946352946],pt:['US pint',.473176473],cup:['US cup',.2365882365],floz:['US fl oz',.0295735296],tbsp:['Tablespoon',.0147867648],tsp:['Teaspoon',.00492892159],m3:['Cubic meter',1000]},
+ Area:{m2:['Sq meter',1],km2:['Sq kilometer',1e6],ft2:['Sq foot',.09290304],in2:['Sq inch',.00064516],ac:['Acre',4046.8564224],ha:['Hectare',1e4],mi2:['Sq mile',2589988.11]},
+ Speed:{mps:['m/s',1],kph:['km/h',1/3.6],mph:['mph',.44704],kn:['Knot',.514444],fps:['ft/s',.3048],mach:['Mach',343]},
+ Time:{s:['Second',1],ms:['Millisecond',.001],min:['Minute',60],h:['Hour',3600],d:['Day',86400],wk:['Week',604800],mo:['Month (avg)',2629746],yr:['Year',31556952]},
+ Data:{B:['Byte',1],KB:['Kilobyte',1e3],MB:['Megabyte',1e6],GB:['Gigabyte',1e9],TB:['Terabyte',1e12],KiB:['Kibibyte',1024],MiB:['Mebibyte',1048576],GiB:['Gibibyte',1073741824],bit:['Bit',.125]},
+ Energy:{j:['Joule',1],kj:['Kilojoule',1000],cal:['Calorie',4.184],kcal:['Kilocalorie',4184],wh:['Watt-hour',3600],kwh:['kWh',3.6e6],btu:['BTU',1055.06]},
+ Pressure:{pa:['Pascal',1],kpa:['Kilopascal',1000],bar:['Bar',1e5],psi:['PSI',6894.757],atm:['Atmosphere',101325],mmhg:['mmHg',133.322]}};
+let cat=localStorage.guCat||'Length';
+function toBase(v,u){if(cat==='Temp')return u==='c'?v:u==='f'?(v-32)*5/9:v-273.15;return v*U[cat][u][1]}
+function fromBase(v,u){if(cat==='Temp')return u==='c'?v:u==='f'?v*9/5+32:v+273.15;return v/U[cat][u][1]}
+function nice(x){if(!isFinite(x))return'—';const a=Math.abs(x);if(a!==0&&(a<1e-6||a>=1e15))return x.toExponential(6);return+x.toPrecision(10)+''}
+function setCat(c){cat=c;localStorage.guCat=c;const keys=Object.keys(U[c]);[$('fu'),$('tu')].forEach((s,i)=>{s.innerHTML=keys.map(k=>`<option value="${k}">${U[c][k][0]} (${k})</option>`).join('');s.value=keys[i]});
+ document.querySelectorAll('.cats button').forEach(b=>b.classList.toggle('on',b.textContent===c));calc()}
+function calc(dir){const f=$('fu').value,t=$('tu').value;if(dir==='b'){$('a').value=nice(fromBase(toBase(+$('b').value,t),f))}else{$('b').value=nice(fromBase(toBase(+$('a').value,f),t))}
+ const one=fromBase(toBase(1,f),t);$('formula').textContent=`1 ${U[cat][f][0]} = ${nice(one)} ${U[cat][t][0]}`;
+ const base=toBase(+$('a').value,f);$('all').innerHTML=Object.keys(U[cat]).filter(k=>k!==f).map(k=>`<div data-k="${k}"><b>${nice(fromBase(base,k))}</b><span>${U[cat][k][0]}</span></div>`).join('');
+ $('all').querySelectorAll('div').forEach(d=>d.onclick=()=>{$('tu').value=d.dataset.k;calc()})}
+$('cats').innerHTML=Object.keys(U).map(c=>`<button>${c}</button>`).join('');$('cats').querySelectorAll('button').forEach(b=>b.onclick=()=>setCat(b.textContent));
+$('a').oninput=()=>calc();$('b').oninput=()=>calc('b');$('fu').onchange=()=>calc();$('tu').onchange=()=>calc();
+$('swap').onclick=()=>{const f=$('fu').value;$('fu').value=$('tu').value;$('tu').value=f;calc()};
+setCat(U[cat]?cat:'Length');
+</script></body></html>
