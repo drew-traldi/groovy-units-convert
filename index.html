@@ -33,6 +33,8 @@ h1{font-family:'Shrikhand',cursive;font-size:clamp(46px,10vw,92px);text-align:ce
 .all b{word-break:break-all}
 .all span{opacity:.7;font-size:13px;white-space:nowrap}
 @media(max-width:560px){.io{grid-template-columns:1fr}.swap{margin:auto;transform:rotate(90deg)}}
+/* mobile: 16px fields stop iOS focus-zoom; roomier touch targets */
+@media (max-width:640px){input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=color]),select,textarea{font-size:16px!important}}
 </style></head><body>
 <div class="sun"></div>
 <div class="wrap">
